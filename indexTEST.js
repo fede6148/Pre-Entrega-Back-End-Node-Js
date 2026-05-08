@@ -1,3 +1,85 @@
+//--- OK ---
+// se puede unificar id y newproduct en una sola variable (idOrProduct = process.argv[4]), 
+// ya que no se usan al mismo tiempo, 
+// pero lo dejo separado para mayor claridad en el código.
+
+console.log("Proyecto pre-entega - API Fake Store - GET / POST / DELETE");
+
+const resource = process.argv[3]; // "products" es el recurso
+const id = process.argv[4];       // Numero id (o undefined) para GET/DELETE
+const newproduct = process.argv[4]; // Nuevo producto para POST
+const price = process.argv[5];     // Precio para POST (debe ser un número, se parsea a float)
+const category = process.argv[6];  // Categoría para POST (debe ser una cadena, se pasa tal cual)
+const BASE_URL = 'https://fakestoreapi.com/products';
+
+async function getProducts() {  
+    const url = id ? `${BASE_URL}/${id}` : BASE_URL;  // Construye la URL si se proporciona un ID o no
+    console.log(`Obteniendo datos de ${url}...`);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log('Datos:', data);
+    } catch (error) {
+        console.error('Error:', error);
+    } 
+    break;
+}
+
+async function postProduct() {
+    if (newproduct && price && category) {
+        try {
+            const newProductData = { 
+            title: newproduct, 
+            price: parseFloat(price), // Asegura que el precio sea un número, se parsea a float
+            category: category};
+        const response = await fetch(BASE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newProductData)
+            });
+        const data = await response.json();
+        console.log(data);
+        } catch (error) {
+            console.error('Error:', error);
+        }}
+    else {
+        console.log("Error: Usa el formato: POST products, nuevo producto, precio, categoría");
+        }   
+    break;
+}
+
+async function deleteProduct() {
+    if (resource === "products" && id) {
+        try {
+        const response = await fetch(`${BASE_URL}/${id}`, {
+            method: "DELETE",
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        } catch (error) {
+            console.error('Error:', error);
+        }}
+    else {
+        console.log("Error: Usa el formato: DELETE products {id}");
+        }
+    break;
+}
+
+switch (process.argv[2]) {
+    case "GET":
+        getProducts();
+        break;
+    case "POST":
+        postProduct();
+        break;
+    case "DELETE":
+        deleteProduct();
+        break; 
+    default:
+        console.log("Método no reconocido. Usa GET, POST o DELETE.");
+}
+
+//----------------------------------------------------------------------  
 
 console.log(process.argv.slice(2)); 
 switch (process.argv[2]) {    
